@@ -1,12 +1,19 @@
 var util = require("util"),
 io = require("socket.io"),
 Player = require("./Player").Player;
+var express = require('express');
+var app = express();
 
 var socket, players;
 
 function init(){
+	app.get('/', function(req,res) {
+		res.sendfile('./public/index.html');
+	});
+	app.use(express.static('public'));
+
 	players = [];
-	socket = io.listen(8000);
+	socket = io.listen(app.listen(3000));
 	socket.configure(function() {
 		socket.set("transports", ["websocket"]);
 		socket.set("log level", 2);

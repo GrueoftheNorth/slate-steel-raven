@@ -35,7 +35,7 @@ function init() {
 	localPlayer = new Player(startX, startY);
 
 	// The second parameter of io.connect is an options object.
-	socket = io.connect("http://localhost", {port: 8000, transports: ["websocket"]});
+	socket = io.connect("http://192.168.1.7", {port: 3000, transports: ["websocket"]});
 
 	remotePlayers = [];
 
