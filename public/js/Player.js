@@ -2,13 +2,15 @@
 ** GAME PLAYER CLASS
 **************************************************/
 var Player = function(startX, startY, stage) {
-	var	moveAmount = 2,
-		id,
-		texture = PIXI.Texture.fromImage("samurai.png"),
-		samurai = new PIXI.Sprite(texture);
+	var moveAmount = 2;
+	var id;
+
+	var texture = PIXI.Texture.fromImage("samurai.png");
+	samurai = new PIXI.Sprite(texture);
 	
 	samurai.postiion.y = startY;
-	samurai.position.x = startX,
+	samurai.position.x = startX;
+	console.log('positions set');
 	stage.addChild(samurai);
 	console.log('player created');
 		
