@@ -6,7 +6,9 @@ var stage,			// Canvas DOM element
 	localPlayer,		// Local player
 	remotePlayers,
 	socket,
-	renderer;
+	renderer,
+	width,
+	height;
 
 
 /**************************************************
@@ -15,8 +17,10 @@ var stage,			// Canvas DOM element
 function init() {
 	// Declare the stage and rendering context
 	stage = new PIXI.Stage(0x66FF99);
+	width = $(window).width();
+	height = $(window).height();
 
-	renderer = PIXI.autoDetectRenderer(window.innerWidth,window.innerHeight);
+	renderer = PIXI.autoDetectRenderer(width,height);
 	document.body.appendChild(renderer.view);
 
 	// Initialise keyboard controls
@@ -110,8 +114,8 @@ function onMovePlayer(data) {
 		return;
 		};
 
-	movePlayer.setX(data.x);
-	movePlayer.setY(data.y);
+	movePlayer.getSamurai().position.x = data.x;
+	movePlayer.getSamurai().position.y = data.y;
 };
 
 function onRemovePlayer(data){

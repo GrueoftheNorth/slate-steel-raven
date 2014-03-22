@@ -6,7 +6,7 @@ var Player = function(startX, startY, stage) {
 	var id;
 
 	var texture = PIXI.Texture.fromImage("samurai.png");
-	samurai = new PIXI.Sprite(texture);
+	var samurai = new PIXI.Sprite(texture);
 	samurai.position.y = startY;
 	samurai.position.x = startX;
 	stage.addChild(samurai);
