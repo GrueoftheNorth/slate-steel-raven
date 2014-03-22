@@ -32,7 +32,6 @@ function onSocketConnection(client) {
 	client.on("disconnect", onClientDisconnect);
 	client.on("new player", onNewPlayer);
 	client.on("move player", onMovePlayer);
-	client.on("move mouse", onMoveMouse);
 }
 
 function onClientDisconnect() {
@@ -63,20 +62,6 @@ function onNewPlayer(data) {
 	};
 
 	players.push(newPlayer);
-};
-
-function onMoveMouse(data){
-	var mousePlayer = playerById(this.id);
-
-	if(!mousePlayer){
-		util.log("Player not found" + data.id);
-		return;
-	};
-
-	mousePlayer.setMouseX(data.x);
-	mousePlayer.setMouseY(data.y);
-
-	this.broadcast.emit("move mouse", {id: mousePlayer.id, x: mousePlayer.getMouseX(), y: mousePlayer.getMouseY()});
 };
 
 function onMovePlayer(data){

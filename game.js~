@@ -19,7 +19,6 @@ function init(){
 		socket.set("log level", 2);
 		setEventHandlers();
 	});
-	app.listen(3000);
 };	
 
 var setEventHandlers = function() {

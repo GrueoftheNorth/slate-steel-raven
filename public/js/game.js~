@@ -1,26 +1,23 @@
 /**************************************************
 ** GAME VARIABLES
 **************************************************/
-var canvas,			// Canvas DOM element
-	ctx,			// Canvas rendering context
+var stage,			// Canvas DOM element
 	keys,			// Keyboard input
 	localPlayer,		// Local player
 	remotePlayers,
 	socket,
-	mousePos;	
+	renderer;
 
 
 /**************************************************
 ** GAME INITIALISATION
 **************************************************/
 function init() {
-	// Declare the canvas and rendering context
-	canvas = document.getElementById("gameCanvas");
-	ctx = canvas.getContext("2d");
+	// Declare the stage and rendering context
+	stage = new PIXI.Stage(0x66FF99);
 
-	// Maximise the canvas
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
+	renderer = PIXI.autoDetectRenderer(window.innerWidth,window.innerHeight);
+	document.body.appendChild(renderer.view);
 
 	// Initialise keyboard controls
 	keys = new Keys();
@@ -28,11 +25,12 @@ function init() {
 	// Calculate a random start position for the local player
 	// The minus 5 (half a player size) stops the player being
 	// placed right on the egde of the screen
-	var startX = Math.round(Math.random()*(canvas.width-5)),
-	    startY = Math.round(Math.random()*(canvas.height-5));
+	var startX = Math.round(Math.random()*(window.innerWidth-5)),
+	    startY = Math.round(Math.random()*(window.innerHeight-5));
 
 	// Initialise the local player
-	localPlayer = new Player(startX, startY);
+	localPlayer = new Player(startX, startY, stage);
+	requestAnimFrame(animate);
 
 	// The second parameter of io.connect is an options object.
 	socket = io.connect("http://192.168.1.7", {port: 3000, transports: ["websocket"]});
@@ -56,15 +54,11 @@ var setEventHandlers = function() {
 	// Window resize
 	window.addEventListener("resize", onResize, false);
 
-	//Move Mouse
-	canvas.addEventListener('mousemove', onLocalMouse, false);
-
 	//listen for socket events and setup handlers
 	socket.on("connect", onSocketConnected);
 	socket.on("disconnect", onSocketDisconnect);
 	socket.on("new player", onNewPlayer);
 	socket.on("move player", onMovePlayer);
-	socket.on("move mouse", onMoveMouse);
 	socket.on("remove player", onRemovePlayer);
 	
 };
@@ -83,16 +77,11 @@ function onKeyup(e) {
 	};
 };
 
-function onLocalMouse(e) {
-	if (localPlayer) {
-		mousePos = getMousePos(canvas, e);	
-	};
-};
-// Browser window resize
 function onResize(e) {
-	// Maximise the canvas
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
+	// Maximise the renderer
+	var screenW = window.innerWidth,
+	screenH = window.innerHeight;
+	renderer.resize(screenW,screenH);
 };
 
 function onSocketConnected() {
@@ -106,7 +95,7 @@ function onSocketDisconnect() {
 
 function onNewPlayer(data) {
 	console.log("New player connected: " + data.id);
-	var newPlayer = new Player(data.x, data.y);
+	var newPlayer = new Player(data.x, data.y, stage);
 	newPlayer.id = data.id;
 	remotePlayers.push(newPlayer);
 };
@@ -123,18 +112,6 @@ function onMovePlayer(data) {
 	movePlayer.setY(data.y);
 };
 
-function onMoveMouse(data) {
-	var mousePlayer = playerById(data.id);
-
-	if(!mousePlayer) {
-		console.log('Player: ' + data.id + ' attempted to move mouse but cannot be found.');
-		return;
-	};
-
-	mousePlayer.setMouseX(data.x);
-	mousePlayer.setMouseY(data.y);
-};
-
 function onRemovePlayer(data){
 	var removePlayer = playerById(data.id);
 
@@ -143,6 +120,7 @@ function onRemovePlayer(data){
 		return;
 	};
 
+	stage.removeChild(removePlayer.samurai);
 	remotePlayers.splice(remotePlayers.indexOf(removePlayer), 1);
 };
 
@@ -154,7 +132,7 @@ function animate() {
 	draw();
 
 	// Request a new animation frame using Paul Irish's shim
-	window.requestAnimFrame(animate);
+	requestAnimFrame(animate);
 };
 
 /**************************************************
@@ -165,9 +143,6 @@ function update() {
 		socket.emit("move player", {x: localPlayer.getX(), y: localPlayer.getY()});
 	};
 
-	if(mousePos != null && localPlayer.mouseUpdate(mousePos)) {
-		socket.emit("move mouse", {x: localPlayer.getMouseX(), y: localPlayer.getMouseY()});
-	};
 };
 
 
@@ -175,29 +150,13 @@ function update() {
 ** GAME DRAW
 **************************************************/
 function draw() {
-	// Wipe the canvas clean
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-	// Draw the local player
-	localPlayer.draw(ctx);
-
-	var i;
-	for(i = 0; i < remotePlayers.length; i++) {
-		remotePlayers[i].draw(ctx);
-	};
+	// Draw the sum of players
+	renderer.render(stage);
 };
 
 /**************************************************
 ** MISC UTILITES
 **************************************************/
-
-function getMousePos(canvas, e) {
-	var rect = canvas.getBoundingClientRect();
-	return {
-		x: e.clientX - rect.left,
-		y: e.clientY - rect.top,
-	};
-};
 
 function playerById(id){
 	var i;
