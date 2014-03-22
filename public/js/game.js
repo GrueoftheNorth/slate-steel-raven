@@ -98,6 +98,8 @@ function onNewPlayer(data) {
 	var newPlayer = new Player(data.x, data.y, stage);
 	newPlayer.id = data.id;
 	remotePlayers.push(newPlayer);
+	console.log(newPlayer.getSamurai());
+	stage.addChild(newPlayer.getSamurai());
 };
 
 function onMovePlayer(data) {
@@ -120,7 +122,8 @@ function onRemovePlayer(data){
 		return;
 	};
 
-	stage.removeChild(removePlayer.samurai);
+	stage.removeChild(removePlayer.getSamurai());
+	//Can't just do the above.
 	remotePlayers.splice(remotePlayers.indexOf(removePlayer), 1);
 };
 
@@ -166,4 +169,3 @@ function playerById(id){
 	};
 	return false;
 };
-
