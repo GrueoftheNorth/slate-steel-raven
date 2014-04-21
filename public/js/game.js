@@ -28,7 +28,7 @@ function init() {
 
 	// Calculate a random start position for the local player
 	// The minus 5 (half a player size) stops the player being
-	// placed right on the egde of the screen
+	// placed right on the edge of the screen
 	var startX = Math.round(Math.random()*(window.innerWidth-5)),
 	    startY = Math.round(Math.random()*(window.innerHeight-5));
 
@@ -37,6 +37,7 @@ function init() {
 	requestAnimFrame(animate);
 
 	// The second parameter of io.connect is an options object.
+        // TODO: Remove hardcoded ip
 	socket = io.connect("http://192.168.1.7", {port: 3000, transports: ["websocket"]});
 
 	remotePlayers = [];
@@ -127,7 +128,6 @@ function onRemovePlayer(data){
 	};
 
 	stage.removeChild(removePlayer.getSamurai());
-	//Can't just do the above.
 	remotePlayers.splice(remotePlayers.indexOf(removePlayer), 1);
 };
 

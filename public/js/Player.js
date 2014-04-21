@@ -4,13 +4,15 @@
 var Player = function(startX, startY, stage) {
 	var moveAmount = 2;
 	var id;
+        var actions = [];
 
 	var texture = PIXI.Texture.fromImage("samurai.png");
 	var samurai = new PIXI.Sprite(texture);
+        samurai.scale.x = .3;
+        samurai.scale.y = .3;
 	samurai.position.y = startY;
 	samurai.position.x = startX;
 	stage.addChild(samurai);
-		
 		
 	var getX = function(){
 		return samurai.position.x;
@@ -19,12 +21,15 @@ var Player = function(startX, startY, stage) {
 	var getY = function(){
 		return samurai.position.y;
 	}; 
+
 	var setX = function(newX){
 		samurai.position.x = newX;
 	};
+
 	var setY = function(newY){
 		samurai.position.y = newY;
 	};
+        
 	var getSamurai = function(){
 		return samurai;
 	};
